@@ -1,12 +1,13 @@
 # CronGuard
 
-Phase: SCAFFOLDING
+Phase: DEVELOPMENT
 
 ## Project Spec
 - **Idea**: CronGuard is a dead man's switch monitoring service for cron jobs and scheduled tasks. Users create monitors with expected intervals (e.g., "every 5 minutes", "daily at 3am"). Their scripts ping a unique URL on each successful run. If a ping is missed beyond the grace period, CronGuard alerts the team via email (and optionally webhook). Think Healthchecks.io / Cronitor / Dead Man's Snitch — a focused, developer-friendly tool that catches the #1 ops failure: silent cron job breakage.
 - **Target users**: Developers, DevOps engineers, small-to-mid SaaS teams, freelancers running scheduled backups/reports/syncs. Anyone with cron jobs, scheduled tasks, or periodic scripts that must not fail silently.
 - **Revenue model**: Freemium subscription. Free tier: 5 monitors, email alerts only, 1-day log retention. Pro ($9/mo): 50 monitors, webhook alerts, 30-day log retention, team members. Business ($29/mo): unlimited monitors, 90-day retention, priority support, API access, Slack integration.
 - **Tech stack**: Python, FastAPI, SQLite (via async SQLAlchemy + aiosqlite), Jinja2 + Tailwind CSS (CDN), APScheduler, Docker
+- **Repo**: https://github.com/arcangelileo/cron-guard
 - **MVP scope**:
   - User registration & login (JWT + httponly cookies)
   - Dashboard listing all monitors with status (up/down/new)
@@ -37,8 +38,8 @@ Phase: SCAFFOLDING
 - **Tests**: pytest + httpx async test client, in-memory SQLite.
 
 ## Task Backlog
-- [ ] Create project structure (pyproject.toml, src/app/, configs)
-- [ ] Set up FastAPI app skeleton with health check and config
+- [x] Create project structure (pyproject.toml, src/app/, configs)
+- [x] Set up FastAPI app skeleton with health check and config
 - [ ] Create database models (User, Monitor, Ping, Alert) and Alembic migrations
 - [ ] Implement user auth (register, login, logout, JWT middleware)
 - [ ] Build auth UI (login/register pages with Tailwind styling)
@@ -61,8 +62,44 @@ Phase: SCAFFOLDING
 - Rationale: proven market (Cronitor, Healthchecks.io, Dead Man's Snitch all charge $20-100+/mo), simple to build (receive pings, alert on missed), complements StatusPing (external uptime vs internal job monitoring), clear freemium model
 - Created spec and backlog
 
+### Session 2 — SCAFFOLDING
+- Created GitHub repo: https://github.com/arcangelileo/cron-guard
+- Set up project structure: pyproject.toml with all dependencies, src/app/ layout
+- Created FastAPI app skeleton with health check endpoint (`GET /health`)
+- Set up async SQLAlchemy database layer with in-memory SQLite for tests
+- Configured Alembic for async migrations
+- Created Pydantic settings with env var support (`CRONGUARD_` prefix)
+- Wrote and passed health check tests (pytest + httpx async client)
+- Phase changed from SCAFFOLDING → DEVELOPMENT
+
 ## Known Issues
 (none yet)
 
 ## Files Structure
-(will be updated as files are created)
+```
+cron-guard/
+├── CLAUDE.md
+├── .gitignore
+├── pyproject.toml              # Project config, dependencies, pytest/ruff settings
+├── alembic.ini                 # Alembic migration config
+├── alembic/
+│   ├── env.py                  # Async Alembic environment
+│   ├── script.py.mako          # Migration template
+│   └── versions/               # Migration files (empty)
+├── src/
+│   └── app/
+│       ├── __init__.py
+│       ├── config.py           # Pydantic settings (DB, auth, SMTP, etc.)
+│       ├── database.py         # Async SQLAlchemy engine, session, Base
+│       ├── main.py             # FastAPI app, lifespan, health check
+│       ├── routers/
+│       │   └── __init__.py
+│       ├── static/
+│       │   └── .gitkeep
+│       └── templates/
+│           └── .gitkeep
+└── tests/
+    ├── __init__.py
+    ├── conftest.py             # Test fixtures (in-memory DB, async client)
+    └── test_health.py          # Health check endpoint tests
+```
