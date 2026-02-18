@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Sign In — CronGuard{% endblock %}
+
+{% block body %}
+<div class="min-h-full flex">
+    <!-- Left Panel: Branding -->
+    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 p-12 flex-col justify-between relative overflow-hidden">
+        <!-- Decorative background -->
+        <div class="absolute inset-0 opacity-[0.07]">
+            <svg class="w-full h-full" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="300" cy="100" r="200" stroke="white" stroke-width="0.5"/>
+                <circle cx="300" cy="100" r="150" stroke="white" stroke-width="0.5"/>
+                <circle cx="300" cy="100" r="100" stroke="white" stroke-width="0.5"/>
+                <circle cx="100" cy="350" r="120" stroke="white" stroke-width="0.5"/>
+                <circle cx="100" cy="350" r="80" stroke="white" stroke-width="0.5"/>
+            </svg>
+        </div>
+
+        <div class="relative z-10">
+            <div class="flex items-center gap-3 mb-16">
+                <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-2xl font-bold text-white">CronGuard</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-white mb-4 leading-tight">Never miss a<br>failed cron job again.</h1>
+            <p class="text-brand-200 text-lg leading-relaxed max-w-md">Monitor your scheduled tasks with dead man's switch detection. Get alerted the moment a job stops running.</p>
+        </div>
+
+        <div class="relative z-10 space-y-4">
+            <div class="flex items-center gap-3 text-brand-200">
+                <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>Simple HTTP ping from your scripts</span>
+            </div>
+            <div class="flex items-center gap-3 text-brand-200">
+                <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>Instant email &amp; webhook alerts</span>
+            </div>
+            <div class="flex items-center gap-3 text-brand-200">
+                <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>Free tier with 5 monitors — no credit card</span>
+            </div>
+            <div class="flex items-center gap-3 text-brand-200">
+                <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>Status badges for your READMEs</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel: Form -->
+    <div class="flex-1 flex items-center justify-center p-8 bg-white">
+        <div class="w-full max-w-md">
+            <div class="lg:hidden flex items-center gap-2 mb-8">
+                <svg class="w-8 h-8 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-xl font-bold text-gray-900">CronGuard</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
+            <p class="text-gray-500 mb-8">Sign in to your account to continue.</p>
+
+            {% if errors %}
+            <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
+                {% for error in errors %}
+                <p class="text-sm text-red-700 flex items-center gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                    {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/auth/login" class="space-y-5">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
+                    <input type="email" id="email" name="email" value="{{ email|default('', true) }}" required autofocus
+                        class="input-field"
+                        placeholder="you@example.com">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                    <input type="password" id="password" name="password" required
+                        class="input-field"
+                        placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="btn-primary w-full">
+                    Sign in
+                </button>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-gray-500">
+                Don't have an account?
+                <a href="/auth/register" class="text-brand-600 font-semibold hover:text-brand-700 transition-colors">Create one free</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

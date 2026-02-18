@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - cronguard-data:/data
+    environment:
+      - CRONGUARD_DATABASE_URL=sqlite+aiosqlite:////data/cronguard.db
+      - CRONGUARD_SECRET_KEY=${CRONGUARD_SECRET_KEY:-change-me-in-production}
+      - CRONGUARD_BASE_URL=${CRONGUARD_BASE_URL:-http://localhost:8000}
+      - CRONGUARD_SMTP_HOST=${CRONGUARD_SMTP_HOST:-localhost}
+      - CRONGUARD_SMTP_PORT=${CRONGUARD_SMTP_PORT:-1025}
+      - CRONGUARD_SMTP_FROM_EMAIL=${CRONGUARD_SMTP_FROM_EMAIL:-alerts@cronguard.dev}
+    restart: unless-stopped
+
+volumes:
+  cronguard-data:

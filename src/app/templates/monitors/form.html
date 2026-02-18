@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit Monitor{% else %}New Monitor{% endif %} — CronGuard{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto fade-in">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center gap-2 text-sm text-gray-500">
+            <li><a href="/dashboard" class="hover:text-gray-700 transition-colors">Dashboard</a></li>
+            <li><svg class="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg></li>
+            {% if editing %}
+            <li><a href="/monitors/{{ monitor.id }}" class="hover:text-gray-700 transition-colors">{{ monitor.name }}</a></li>
+            <li><svg class="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg></li>
+            <li class="text-gray-900 font-medium">Edit</li>
+            {% else %}
+            <li class="text-gray-900 font-medium">New Monitor</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h1 class="text-lg font-semibold text-gray-900">{% if editing %}Edit Monitor{% else %}Create New Monitor{% endif %}</h1>
+            <p class="text-sm text-gray-500 mt-1">{% if editing %}Update the settings for this monitor.{% else %}Set up a new cron job monitor. You'll get a unique ping URL to add to your script.{% endif %}</p>
+        </div>
+
+        {% if errors %}
+        <div class="mx-6 mt-5 bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
+            {% for error in errors %}
+            <p class="text-sm text-red-700 flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                {{ error }}
+            </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% if editing %}/monitors/{{ monitor.id }}/edit{% else %}/monitors/new{% endif %}" class="p-6 space-y-6">
+            <!-- Name -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1.5">Monitor Name</label>
+                <input type="text" id="name" name="name" required maxlength="200" autofocus
+                    value="{{ form_name|default(monitor.name if monitor else '', true) }}"
+                    class="input-field"
+                    placeholder="e.g., Nightly database backup">
+                <p class="mt-1 text-xs text-gray-400">A descriptive name to help you identify this monitor.</p>
+            </div>
+
+            <!-- Period -->
+            <div>
+                <label for="period" class="block text-sm font-medium text-gray-700 mb-1.5">Expected Interval</label>
+                <select id="period" name="period" class="input-field">
+                    {% for value, label in presets %}
+                    <option value="{{ value }}" {% if (form_period|default(monitor.period if monitor else 3600, true)|int) == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <p class="mt-1 text-xs text-gray-400">How often your cron job should run. We expect a ping within this interval.</p>
+            </div>
+
+            <!-- Grace Period -->
+            <div>
+                <label for="grace" class="block text-sm font-medium text-gray-700 mb-1.5">Grace Period (seconds)</label>
+                <input type="number" id="grace" name="grace" min="0" max="604800"
+                    value="{{ form_grace|default(monitor.grace if monitor else 0, true) }}"
+                    class="input-field"
+                    placeholder="0 for auto (50% of period, min 60s)">
+                <p class="mt-1 text-xs text-gray-400">Extra time before alerting. Set to 0 for automatic (50% of period, minimum 60 seconds).</p>
+            </div>
+
+            <!-- Webhook URL -->
+            <div>
+                <label for="webhook_url" class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Webhook URL
+                    <span class="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input type="url" id="webhook_url" name="webhook_url"
+                    value="{{ form_webhook_url|default(monitor.webhook_url if monitor and monitor.webhook_url else '', true) }}"
+                    class="input-field"
+                    placeholder="https://hooks.slack.com/services/...">
+                <p class="mt-1 text-xs text-gray-400">We'll POST a JSON payload to this URL when the monitor goes down or recovers.</p>
+            </div>
+
+            <!-- Submit -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <a href="{% if editing %}/monitors/{{ monitor.id }}{% else %}/dashboard{% endif %}"
+                    class="btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-primary">
+                    {% if editing %}Save Changes{% else %}Create Monitor{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
