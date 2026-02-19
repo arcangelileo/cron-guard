@@ -94,9 +94,8 @@ async def test_change_password_mismatch(client):
 async def test_regenerate_api_key(client):
     await register_and_get_cookie(client)
 
-    # Get initial API key
-    settings1 = await client.get("/settings")
-    # The API key appears on the settings page
+    # Get initial API key (verify settings page loads)
+    await client.get("/settings")
 
     # Regenerate
     response = await client.post("/settings/api-key")

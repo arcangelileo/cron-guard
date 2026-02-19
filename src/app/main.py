@@ -75,9 +75,6 @@ app.include_router(settings_router.router)
 
 @app.get("/")
 async def root(request: Request):
-    # Check if user is logged in; if not, show landing page
-    from app.auth import get_current_user_optional
-
     token = request.cookies.get("access_token")
     if token:
         return RedirectResponse("/dashboard", status_code=303)

@@ -1,18 +1,31 @@
 services:
   web:
     build: .
+    container_name: cronguard
     ports:
-      - "8000:8000"
+      - "${CRONGUARD_PORT:-8000}:8000"
     volumes:
       - cronguard-data:/data
     environment:
       - CRONGUARD_DATABASE_URL=sqlite+aiosqlite:////data/cronguard.db
-      - CRONGUARD_SECRET_KEY=${CRONGUARD_SECRET_KEY:-change-me-in-production}
+      - CRONGUARD_SECRET_KEY=${CRONGUARD_SECRET_KEY:?Set CRONGUARD_SECRET_KEY in .env}
       - CRONGUARD_BASE_URL=${CRONGUARD_BASE_URL:-http://localhost:8000}
-      - CRONGUARD_SMTP_HOST=${CRONGUARD_SMTP_HOST:-localhost}
-      - CRONGUARD_SMTP_PORT=${CRONGUARD_SMTP_PORT:-1025}
+      - CRONGUARD_SMTP_HOST=${CRONGUARD_SMTP_HOST:-}
+      - CRONGUARD_SMTP_PORT=${CRONGUARD_SMTP_PORT:-587}
       - CRONGUARD_SMTP_FROM_EMAIL=${CRONGUARD_SMTP_FROM_EMAIL:-alerts@cronguard.dev}
+      - CRONGUARD_SMTP_USER=${CRONGUARD_SMTP_USER:-}
+      - CRONGUARD_SMTP_PASSWORD=${CRONGUARD_SMTP_PASSWORD:-}
+      - CRONGUARD_SMTP_TLS=${CRONGUARD_SMTP_TLS:-true}
+    env_file:
+      - path: .env
+        required: false
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   cronguard-data:

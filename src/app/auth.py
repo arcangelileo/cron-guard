@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, Request
-from fastapi.responses import RedirectResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy import select
@@ -52,7 +51,7 @@ async def get_current_user(
     # Try API key first
     api_key = request.headers.get("X-Api-Key")
     if api_key:
-        result = await db.execute(select(User).where(User.api_key == api_key, User.is_active == True))
+        result = await db.execute(select(User).where(User.api_key == api_key, User.is_active.is_(True)))
         user = result.scalar_one_or_none()
         if user:
             return user
@@ -70,7 +69,7 @@ async def get_current_user(
     if user_id is None:
         raise AuthRequired()
 
-    result = await db.execute(select(User).where(User.id == int(user_id), User.is_active == True))
+    result = await db.execute(select(User).where(User.id == int(user_id), User.is_active.is_(True)))
     user = result.scalar_one_or_none()
     if user is None:
         raise AuthRequired()

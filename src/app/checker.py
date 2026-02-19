@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, timezone, timedelta
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.database import async_session
 from app.models import Monitor

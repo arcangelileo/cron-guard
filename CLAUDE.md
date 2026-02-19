@@ -1,6 +1,6 @@
 # CronGuard
 
-Phase: DEPLOYMENT
+Phase: COMPLETE
 
 ## Project Spec
 - **Idea**: CronGuard is a dead man's switch monitoring service for cron jobs and scheduled tasks. Users create monitors with expected intervals (e.g., "every 5 minutes", "daily at 3am"). Their scripts ping a unique URL on each successful run. If a ping is missed beyond the grace period, CronGuard alerts the team via email (and optionally webhook). Think Healthchecks.io / Cronitor / Dead Man's Snitch — a focused, developer-friendly tool that catches the #1 ops failure: silent cron job breakage.
@@ -56,6 +56,7 @@ Phase: DEPLOYMENT
 - [x] Write Dockerfile and docker-compose.yml
 - [x] Write README with setup and deploy instructions
 - [x] QA pass: bug fixes, UI polish, expanded test coverage
+- [x] Production deployment: Dockerfile, docker-compose, .env.example, comprehensive README, final code cleanup
 
 ## Progress Log
 ### Session 1 — IDEATION
@@ -128,6 +129,15 @@ Phase: DEPLOYMENT
 
 **All 62 tests passing. Phase changed from QA → DEPLOYMENT.**
 
+### Session 5 — DEPLOYMENT & FINALIZATION
+- Enhanced Dockerfile: multi-stage build (builder + runtime), non-root `cronguard` user, OCI labels, health check via `/health` endpoint, exec-form CMD for proper signal handling, persistent `/data` volume
+- Updated docker-compose.yml: container name, optional `.env` file loading, production-ready SMTP defaults (port 587, TLS enabled), health check
+- Created `.env.example` with fully documented environment variables, SMTP provider examples (Gmail, SendGrid, Mailgun), and secret key generation instructions
+- Wrote comprehensive README.md: feature list, architecture diagram, quick start (Docker one-liner), local dev setup, full API reference with all 24 endpoints, ping integration examples (Bash, Python, Node.js, PowerShell, wget, Docker healthcheck), architecture overview, monitor status flow diagram, tech stack table, development guide
+- Final code cleanup: fixed 9 ruff lint issues — removed 6 unused imports (RedirectResponse, Response, AsyncSession, selectinload, get_current_user_optional), replaced 2 `== True` comparisons with `.is_(True)` for SQLAlchemy column filters, removed 1 unused variable assignment
+- All 62 tests passing, ruff lint clean
+- **Phase changed from DEPLOYMENT → COMPLETE**
+
 ## Known Issues
 (none)
 
@@ -135,11 +145,12 @@ Phase: DEPLOYMENT
 ```
 cron-guard/
 ├── CLAUDE.md
-├── README.md                   # Setup and deploy docs
+├── README.md                   # Comprehensive setup, API docs, architecture
 ├── .gitignore
+├── .env.example                # Documented environment variables template
 ├── pyproject.toml              # Project config, dependencies, pytest/ruff settings
-├── Dockerfile                  # Container build
-├── docker-compose.yml          # Docker deployment config
+├── Dockerfile                  # Multi-stage production build, non-root user
+├── docker-compose.yml          # One-command Docker deployment
 ├── alembic.ini                 # Alembic migration config
 ├── alembic/
 │   ├── env.py                  # Async Alembic environment
